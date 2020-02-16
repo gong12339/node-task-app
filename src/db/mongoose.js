@@ -5,5 +5,6 @@ const apiName = 'task-manager-api'
 
 mongoose.connect(connectionURL + '/' + apiName, {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 });
