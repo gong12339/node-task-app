@@ -2,7 +2,6 @@ const express = require('express');
 const User = require('../models/user');
 const router = new express.Router();
 
-
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
     try {
@@ -46,13 +45,14 @@ router.patch('/users/:id', async (req, res) => {
         return res.status(400).send({ error: 'Invalid updates!' });
     }
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
+        const user = await User.findById(req.params.id);
         if (!user) {
             res.status(404).send('User not found');
         }
+        updates.forEach(update => {
+            user[update] = req.body[update];
+        });
+        await user.save();
         res.send(user);
     } catch (error) {
         res.status(500).send();
@@ -61,7 +61,7 @@ router.patch('/users/:id', async (req, res) => {
 
 router.delete('/users/:id', async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
+        const user = await User.findByIdAndDelete(req.params.id);
         if (!user) {
             return res.status(404).send();
         }
@@ -69,6 +69,6 @@ router.delete('/users/:id', async (req, res) => {
     } catch (e) {
         res.status(500).send();
     }
-})
+});
 
 module.exports = router;

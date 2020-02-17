@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Task = mongoose.model('task', {
+const taskSchema = mongoose.Schema({
     description: {
         type: String,
         trim: true,
@@ -11,5 +11,14 @@ const Task = mongoose.model('task', {
         default: false
     }
 });
+
+taskSchema.pre('save', async function(next) {
+    const task = this;
+    console.log('task save');
+    console.log(task);
+    next();
+});
+
+const Task = mongoose.model('task', taskSchema);
 
 module.exports = Task;

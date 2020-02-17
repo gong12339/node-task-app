@@ -1,4 +1,3 @@
-
 const express = require('express');
 const Task = require('../models/task');
 const router = new express.Router();
@@ -46,29 +45,28 @@ router.patch('/tasks/:id', async (req, res) => {
         return res.status(400).send({ error: 'Invalid updates!' });
     }
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
+        const task = await Task.findById(req.params.id);
         if (!task) {
             res.status(404).send('Task not found');
         }
+        updates.forEach(update => (task[update] = req.body[update]));
+        await task.save();
         res.send(task);
     } catch (error) {
         res.status(500).send();
     }
 });
 
-router.delete('/tasks/:id', async(req, res) => {
+router.delete('/tasks/:id', async (req, res) => {
     try {
         const task = await Task.findByIdAndDelete(req.params.id);
         if (!task) {
             res.status(404).send();
         }
         res.send(task);
-    } catch(e) {
+    } catch (e) {
         res.status(500).send();
     }
-})
+});
 
 module.exports = router;
